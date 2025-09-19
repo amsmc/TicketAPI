@@ -16,9 +16,9 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        
+
         Log::info('Register attempt:', $request->all());
-        
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -28,7 +28,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             // ✅ DEBUG: Log validation errors
             Log::error('Validation failed:', $validator->errors()->toArray());
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed',
@@ -54,10 +54,10 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token
             ], 201);
-            
+
         } catch (\Exception $e) {
             Log::error('Registration failed:', ['error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Registration failed: ' . $e->getMessage()
