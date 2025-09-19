@@ -9,12 +9,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        
+        Log::info('Register attempt:', $request->all());
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -22,28 +26,45 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
+            // ✅ DEBUG: Log validation errors
+            Log::error('Validation failed:', $validator->errors()->toArray());
+            
             return response()->json([
                 'status' => 'error',
+                'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ], 422);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user'
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'user'
+            ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            Log::info('User registered successfully:', ['user_id' => $user->id]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User registered successfully',
+                'user' => $user,
+                'token' => $token
+            ], 201);
+            
+        } catch (\Exception $e) {
+            Log::error('Registration failed:', ['error' => $e->getMessage()]);
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Registration failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
 
     public function login(Request $request)
     {
