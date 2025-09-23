@@ -17,6 +17,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    Route::get('/profile', [AuthController::class, 'me']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/profile/photo', [AuthController::class, 'updatePhoto']);
+    Route::put('/profile/password', [AuthController::class, 'changePassword']);
+    
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout-all', [AuthController::class, 'logoutAll']);
     
     // User routes
     Route::post('/purchase', [TransactionController::class, 'purchase']);
