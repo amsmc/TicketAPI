@@ -16,16 +16,17 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         Log::info('Register attempt:', $request->all());
-        
+
+        // Line 10-13 sudah benar
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8|confirmed', // ✅ ini benar
         ]);
 
         if ($validator->fails()) {
             Log::error('Validation failed:', $validator->errors()->toArray());
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed',
@@ -51,10 +52,10 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token
             ], 201);
-            
+
         } catch (\Exception $e) {
             Log::error('Registration failed:', ['error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Registration failed: ' . $e->getMessage()
@@ -65,7 +66,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         Log::info('Login attempt:', ['email' => $request->email]);
-        
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -83,7 +84,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             Log::warning('Failed login attempt:', ['email' => $request->email]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Email atau password salah'
@@ -108,7 +109,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = $request->user();
-        
+
         // Delete current access token
         $request->user()->currentAccessToken()->delete();
 
@@ -123,7 +124,7 @@ class AuthController extends Controller
     public function logoutAll(Request $request)
     {
         $user = $request->user();
-        
+
         // Delete all tokens for this user
         $user->tokens()->delete();
 
@@ -178,11 +179,11 @@ class AuthController extends Controller
             if ($request->has('name')) {
                 $updateData['name'] = $request->name;
             }
-            
+
             if ($request->has('email')) {
                 $updateData['email'] = $request->email;
             }
-            
+
             if ($request->has('password')) {
                 $updateData['password'] = Hash::make($request->password);
             }
@@ -199,7 +200,7 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Profile update failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Profile update failed: ' . $e->getMessage()
@@ -233,7 +234,7 @@ class AuthController extends Controller
                 $photo = $request->file('photo');
                 $filename = 'profile_' . $user->id . '_' . time() . '.' . $photo->getClientOriginalExtension();
                 $path = $photo->storeAs('public/profiles', $filename);
-                
+
                 $user->update(['profile_photo' => 'storage/profiles/' . $filename]);
 
                 Log::info('Profile photo updated:', ['user_id' => $user->id]);
@@ -253,7 +254,7 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Photo update failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Photo update failed: ' . $e->getMessage()
@@ -302,7 +303,7 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Password change failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Password change failed: ' . $e->getMessage()
