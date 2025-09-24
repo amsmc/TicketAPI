@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('ticket_name');
             $table->decimal('price', 8, 2);
             $table->date('event_date');
+            // $table->text('description')->nullable();
+            // $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
+            // $table->integer('quantity_sold')->default(0);
             $table->integer('quantity_available');
+            // $table->string('location')->nullable();
             $table->timestamps();
         });
     }
