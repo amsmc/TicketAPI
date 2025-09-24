@@ -52,7 +52,6 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token
             ], 201);
-
         } catch (\Exception $e) {
             Log::error('Registration failed:', ['error' => $e->getMessage()]);
 
@@ -197,7 +196,6 @@ class AuthController extends Controller
                 'message' => 'Profile updated successfully',
                 'user' => $user->fresh() // Get fresh data from database
             ]);
-
         } catch (\Exception $e) {
             Log::error('Profile update failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
 
@@ -226,24 +224,25 @@ class AuthController extends Controller
 
         try {
             if ($request->hasFile('photo')) {
-                // Delete old photo if exists
-                if ($user->profile_photo && file_exists(storage_path('app/public/' . str_replace('storage/', '', $user->profile_photo)))) {
-                    unlink(storage_path('app/public/' . str_replace('storage/', '', $user->profile_photo)));
+                // hapus foto lama kalau ada
+                if ($user->profile_photo && file_exists(public_path($user->profile_photo))) {
+                    unlink(public_path($user->profile_photo));
                 }
 
                 $photo = $request->file('photo');
                 $filename = 'profile_' . $user->id . '_' . time() . '.' . $photo->getClientOriginalExtension();
-                $path = $photo->storeAs('public/profiles', $filename);
 
-                $user->update(['profile_photo' => 'storage/profiles/' . $filename]);
+                // simpan langsung ke public/profiles
+                $photo->move(public_path('profiles'), $filename);
 
-                Log::info('Profile photo updated:', ['user_id' => $user->id]);
+                // simpan path relatif (tanpa "storage/")
+                $user->update(['profile_photo' => 'profiles/' . $filename]);
 
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Photo updated successfully',
                     'user' => $user->fresh(),
-                    'photo_url' => asset($user->profile_photo)
+                    'photo_url' => url('profiles/' . $filename)
                 ]);
             }
 
@@ -251,16 +250,14 @@ class AuthController extends Controller
                 'status' => 'error',
                 'message' => 'No photo uploaded'
             ], 400);
-
         } catch (\Exception $e) {
-            Log::error('Photo update failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'Photo update failed: ' . $e->getMessage()
             ], 500);
         }
     }
+
 
     public function changePassword(Request $request)
     {
@@ -300,7 +297,6 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => 'Password changed successfully'
             ]);
-
         } catch (\Exception $e) {
             Log::error('Password change failed:', ['user_id' => $user->id, 'error' => $e->getMessage()]);
 
