@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->string('ticket_name');
-            $table->decimal('price', 8, 2);
+            $table->decimal('price', 10, 2); // Ubah dari 8,2 ke 10,2 untuk harga yang lebih besar
             $table->date('event_date');
-            // $table->text('description')->nullable();
-            // $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
             // $table->integer('quantity_sold')->default(0);
+            // $table->text('description')->nullable();
+            // $table->string('location');
+            // $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
             $table->integer('quantity_available');
-            // $table->string('location')->nullable();
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

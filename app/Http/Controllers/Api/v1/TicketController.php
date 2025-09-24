@@ -6,30 +6,51 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::where('status', 'active')
-                        ->where('event_date', '>=', now())
-                        ->orderBy('event_date')
-                        ->get();
+        try {
+            // Hapus where('status', 'active') karena kolom status tidak ada
+            $tickets = Ticket::where('event_date', '>=', now())
+                            ->where('quantity_available', '>', 0) // Hanya tiket yang masih tersedia
+                            ->orderBy('event_date')
+                            ->get();
 
-        return response()->json([
-            'status' => 'success',
-            'tickets' => $tickets
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'data' => $tickets // Ubah 'tickets' jadi 'data' untuk konsistensi
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching tickets: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch tickets',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
     {
-        $ticket = Ticket::findOrFail($id);
+        try {
+            $ticket = Ticket::findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'ticket' => $ticket
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'data' => $ticket
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ticket not found'
+            ], 404);
+        }
     }
 
     public function store(Request $request)
@@ -39,8 +60,7 @@ class TicketController extends Controller
             'price' => 'required|numeric|min:0',
             'event_date' => 'required|date|after:today',
             'quantity_available' => 'required|integer|min:1',
-            'description' => 'nullable|string',
-            'location' => 'required|string|max:255'
+            'image_url' => 'nullable|url'
         ]);
 
         if ($validator->fails()) {
@@ -50,67 +70,98 @@ class TicketController extends Controller
             ], 422);
         }
 
-        $ticket = Ticket::create($request->all() + ['status' => 'active', 'quantity_sold' => 0]);
+        try {
+            $ticket = Ticket::create($request->all());
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ticket created successfully',
-            'ticket' => $ticket
-        ], 201);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ticket created successfully',
+                'data' => $ticket
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating ticket: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create ticket'
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)
     {
-        $ticket = Ticket::findOrFail($id);
+        try {
+            $ticket = Ticket::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'ticket_name' => 'sometimes|string|max:255',
-            'price' => 'sometimes|numeric|min:0',
-            'event_date' => 'sometimes|date',
-            'quantity_available' => 'sometimes|integer|min:1',
-            'description' => 'nullable|string',
-            'location' => 'sometimes|string|max:255'
-        ]);
+            $validator = Validator::make($request->all(), [
+                'ticket_name' => 'sometimes|string|max:255',
+                'price' => 'sometimes|numeric|min:0',
+                'event_date' => 'sometimes|date',
+                'quantity_available' => 'sometimes|integer|min:1',
+                'image_url' => 'nullable|url'
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $ticket->update($request->all());
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ticket updated successfully',
+                'data' => $ticket
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => 'Failed to update ticket'
+            ], 500);
         }
-
-        $ticket->update($request->all());
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ticket updated successfully',
-            'ticket' => $ticket
-        ]);
     }
 
     public function destroy($id)
     {
-        $ticket = Ticket::findOrFail($id);
-        $ticket->delete();
+        try {
+            $ticket = Ticket::findOrFail($id);
+            $ticket->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Ticket deleted successfully'
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Ticket deleted successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete ticket'
+            ], 500);
+        }
     }
 
     public function salesData($id)
     {
-        $ticket = Ticket::findOrFail($id);
-        $salesData = $ticket->transactions()
-                           ->selectRaw('DATE(transaction_date) as date, SUM(quantity) as sales, SUM(total_price) as revenue')
-                           ->groupBy('date')
-                           ->orderBy('date')
-                           ->get();
+        try {
+            $ticket = Ticket::findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'sales_data' => $salesData
-        ]);
+            // Implementasi sales data jika ada relasi transactions
+            // $salesData = $ticket->transactions()...
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [] // Sementara kosong sampai ada relasi transactions
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to get sales data'
+            ], 500);
+        }
     }
 }

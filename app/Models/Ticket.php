@@ -13,12 +13,13 @@ class Ticket extends Model
     protected $fillable = [
         'ticket_name',
         'price',
-        'location',
-        'quantity_sold',
         'event_date',
-        'quantity_available',
         'description',
         'status',
+        'quantity_sold',
+        'quantity_available',
+        'location',
+        'image_url',
     ];
 
     protected $casts = [
@@ -46,6 +47,18 @@ class Ticket extends Model
         }
     }
 
+    // Accessor untuk stock (untuk kompatibilitas dengan frontend)
+    public function getStockAttribute(): int
+    {
+        return $this->quantity_available;
+    }
+
+    // Accessor untuk title (untuk kompatibilitas dengan frontend)
+    public function getTitleAttribute(): string
+    {
+        return $this->ticket_name;
+    }
+
     // Scope untuk filter tiket yang masih tersedia
     public function scopeAvailable($query)
     {
@@ -56,5 +69,16 @@ class Ticket extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('event_date', '>=', Carbon::today());
+    }
+
+    // Method untuk mengurangi stock saat pembelian
+    public function reduceStock($quantity)
+    {
+        if ($this->quantity_available >= $quantity) {
+            $this->quantity_available -= $quantity;
+            $this->save();
+            return true;
+        }
+        return false;
     }
 }

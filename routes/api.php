@@ -50,21 +50,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/admin/transactions/{id}/verify', [TransactionController::class, 'verifyPayment']);
         Route::get('/admin/export-report', [DashboardController::class, 'exportReport']);
 
-        // User management untuk admin
+        // User management untuk admin tidak ada karena menggunakan filament
         // Route::get('/admin/users', [UserManagementController::class, 'index']);
         // Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
         // Route::put('/admin/users/{id}', [UserManagementController::class, 'update']);
         // Route::delete('/admin/users/{id}', [UserManagementController::class, 'destroy']);
     });
-    // Owner routes
+    // Owner routes tidak ada karena menggunakan filament
     Route::middleware('role:owner')->group(function () {
         Route::get('/owner/dashboard', [DashboardController::class, 'ownerDashboard']);
 
-        // Ticket management untuk owner
         Route::post('/owner/tickets', [TicketController::class, 'store']);
         Route::put('/owner/tickets/{id}', [TicketController::class, 'update']);
         Route::delete('/owner/tickets/{id}', [TicketController::class, 'destroy']);
         Route::get('/owner/tickets/{id}/sales', [TicketController::class, 'salesData']);
+        // Route::get('/tickets', [TicketController::class, 'index']);
     });
 });
 // Catch-all route untuk handle 404

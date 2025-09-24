@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Ticket;
+use carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -45,15 +46,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Ticket::create([
-            'ticket_name' => 'bubarkan dpri 2025',
-            'price' => 75.00,
-            'event_date' => '2025-07-15',
-            'quantity_available' => 500,
-            'quantity_sold' => 0,
-            'description' => 'kenaikan tunjangan anggota dpri',
-            'location' => 'Central Park, Jakarta',
-            'status' => 'active'
+                'ticket_name' => 'Drama Musikal "Cinta di Ujung Senja"',
+                'price' => 45000,
+                'event_date' => Carbon::now()->addDays(30),
+                'quantity_available' => 100,
+                'image_url' => 'https://via.placeholder.com/400x300/dc2626/ffffff?text=Drama+Musikal',
+                'location' => 'iblis baheula',
+                'created_at' => now(),
+                'updated_at' => now(),
         ]);
+
 
     }
 }
