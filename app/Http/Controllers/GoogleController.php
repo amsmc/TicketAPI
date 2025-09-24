@@ -11,23 +11,39 @@ class GoogleController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        try {
+            return Socialite::driver('google')->stateless()->redirect();
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Google OAuth not configured properly: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->stateless()->user();
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-        $user = User::firstOrCreate(
-            ['email' => $googleUser->getEmail()],
-            [
-                'name' => $googleUser->getName(),
-                'password' => bcrypt(Str::random(16))
-            ]
-        );
+            $user = User::firstOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' => bcrypt(Str::random(16)),
+                    'role' => 'user',
+                    'email_verified_at' => now(),
+                    'profile_photo' => $googleUser->getAvatar()
+                ]
+            );
 
-        Auth::login($user);
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        return redirect('http://localhost:5173');
+            // Samakan dengan konfigurasi di .env
+            return redirect('http://localhost:5173/auth/callback?token=' . $token . '&user=' . base64_encode(json_encode($user)));
+        } catch (\Exception $e) {
+            return redirect('http://localhost:5173/login?error=google_auth_failed');
+        }
     }
 }
