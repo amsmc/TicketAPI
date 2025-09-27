@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\ImageColumn;
 
 class TicketsTable
 {
@@ -15,6 +16,15 @@ class TicketsTable
     {
         return $table
             ->columns([
+                ImageColumn::make('photo')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->width(50)           // lebar gambar
+                    ->height(50)          // tinggi gambar
+                    ->circular()          // gambar bulat
+                    ->square()            // gambar persegi
+                    ->visibility('public') // visibility file
+                    ->defaultImageUrl(url('/images/default.jpg')), // gambar default
                 TextColumn::make('ticket_name')
                     ->searchable(),
                 TextColumn::make('price')

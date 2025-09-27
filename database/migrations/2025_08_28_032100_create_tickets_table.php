@@ -16,12 +16,7 @@ return new class extends Migration
             $table->string('ticket_name');
             $table->decimal('price', 10, 2); // Ubah dari 8,2 ke 10,2 untuk harga yang lebih besar
             $table->date('event_date');
-            // $table->integer('quantity_sold')->default(0);
-            // $table->text('description')->nullable();
-            // $table->string('location');
-            // $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
             $table->integer('quantity_available');
-            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

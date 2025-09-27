@@ -19,7 +19,7 @@ class Ticket extends Model
         'quantity_sold',
         'quantity_available',
         'location',
-        'image_url',
+        'photo',
     ];
 
     protected $casts = [

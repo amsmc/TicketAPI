@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Tickets\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Infolists\Components\ImageEntry;
 
 class TicketInfolist
 {
@@ -26,6 +27,10 @@ class TicketInfolist
                     ->dateTime(),
                 TextEntry::make('updated_at')
                     ->dateTime(),
+                ImageEntry::make('photo')
+                    ->disk('public')
+                    ->label('Foto')
+                    ->placeholder('Tidak ada foto'),
             ]);
     }
 }

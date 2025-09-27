@@ -50,7 +50,6 @@ class DatabaseSeeder extends Seeder
                 'price' => 45000,
                 'event_date' => Carbon::now()->addDays(30),
                 'quantity_available' => 100,
-                'image_url' => 'https://via.placeholder.com/400x300/dc2626/ffffff?text=Drama+Musikal',
                 'location' => 'iblis baheula',
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -18,6 +18,7 @@ return new class extends Migration
 
         // Add missing fields to tickets table
         Schema::table('tickets', function (Blueprint $table) {
+            $table->string('photo')->nullable()->after('price');
             $table->integer('quantity_sold')->default(0)->after('quantity_available');
             $table->text('description')->nullable()->after('quantity_sold');
             $table->string('location')->after('description');

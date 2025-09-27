@@ -64,10 +64,11 @@ class TicketForm
                     ->columnSpanFull()
                     ->rows(3),
 
-                TextInput::make('image_url')
-                    ->label('URL Gambar')
-                    ->url()
-                    ->placeholder('https://example.com/image.jpg'),
+                FileUpload::make('photo')
+                    ->disk('public')
+                    ->directory('tickets')
+                    ->label('Nama File Gambar')
+                    ->nullable(),
 
                 // Alternatif file upload jika ingin upload gambar
                 // FileUpload::make('image')
