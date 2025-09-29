@@ -69,6 +69,14 @@ class TicketForm
                     ->directory('tickets')
                     ->label('Nama File Gambar')
                     ->nullable(),
+                Select::make('Session')
+                    ->label('Sesi')
+                    ->options([
+                        'Pagi-Siang' => 'Pagi-Siang',
+                        'Siang-Sore' => 'Siang-Sore',
+                        'Malam' => 'Malam',
+                    ])
+                    ->nullable(),
 
                 // Alternatif file upload jika ingin upload gambar
                 // FileUpload::make('image')

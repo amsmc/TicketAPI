@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Ticket extends Model
 {
@@ -14,71 +13,53 @@ class Ticket extends Model
         'ticket_name',
         'price',
         'event_date',
-        'description',
-        'status',
-        'quantity_sold',
-        'quantity_available',
         'location',
+        'quantity_available',
+        'quantity_sold',
+        'status',
+        'description',
         'photo',
+        'session',
     ];
 
     protected $casts = [
         'event_date' => 'date',
-        'price' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'price' => 'integer',
+        'quantity_available' => 'integer',
+        'quantity_sold' => 'integer',
     ];
 
-    // Accessor untuk format mata uang
-    public function getFormattedPriceAttribute(): string
+    /**
+     * Get available quantity
+     */
+    public function getAvailableQuantityAttribute()
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return $this->quantity_available - $this->quantity_sold;
     }
 
-    // Accessor untuk status ketersediaan
-    public function getAvailabilityStatusAttribute(): string
+    /**
+     * Check if ticket is available
+     */
+    public function isAvailable()
     {
-        if ($this->quantity_available <= 0) {
-            return 'Sold Out';
-        } elseif ($this->quantity_available <= 10) {
-            return 'Terbatas';
-        } else {
-            return 'Tersedia';
-        }
+        return $this->status === 'active'
+            && $this->getAvailableQuantityAttribute() > 0
+            && $this->event_date >= now();
     }
 
-    // Accessor untuk stock (untuk kompatibilitas dengan frontend)
-    public function getStockAttribute(): int
+    /**
+     * Scope for active tickets
+     */
+    public function scopeActive($query)
     {
-        return $this->quantity_available;
+        return $query->where('status', 'active');
     }
 
-    // Accessor untuk title (untuk kompatibilitas dengan frontend)
-    public function getTitleAttribute(): string
-    {
-        return $this->ticket_name;
-    }
-
-    // Scope untuk filter tiket yang masih tersedia
-    public function scopeAvailable($query)
-    {
-        return $query->where('quantity_available', '>', 0);
-    }
-
-    // Scope untuk event yang akan datang
+    /**
+     * Scope for upcoming events
+     */
     public function scopeUpcoming($query)
     {
-        return $query->where('event_date', '>=', Carbon::today());
-    }
-
-    // Method untuk mengurangi stock saat pembelian
-    public function reduceStock($quantity)
-    {
-        if ($this->quantity_available >= $quantity) {
-            $this->quantity_available -= $quantity;
-            $this->save();
-            return true;
-        }
-        return false;
+        return $query->where('event_date', '>=', now());
     }
 }

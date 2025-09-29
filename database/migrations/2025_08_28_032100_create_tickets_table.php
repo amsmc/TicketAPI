@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2); // Ubah dari 8,2 ke 10,2 untuk harga yang lebih besar
             $table->date('event_date');
             $table->integer('quantity_available');
+            $table->enum('session', ['Pagi-Siang', 'Siang-Sore', 'Malam'])->nullable(); // Tambahkan kolom session
             $table->timestamps();
         });
     }

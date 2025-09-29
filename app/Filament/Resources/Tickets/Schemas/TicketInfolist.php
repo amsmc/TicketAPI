@@ -31,6 +31,9 @@ class TicketInfolist
                     ->disk('public')
                     ->label('Foto')
                     ->placeholder('Tidak ada foto'),
+                TextEntry::make('Session')
+                    ->label('Sesi'),
+                    
             ]);
     }
 }

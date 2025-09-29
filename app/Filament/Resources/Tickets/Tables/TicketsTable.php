@@ -39,9 +39,13 @@ class TicketsTable
                 TextColumn::make('quantity_sold')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('Session')
+                    // ->label('Sesi')
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->sortable(),
                 TextColumn::make('location')
                     ->searchable(),
-                TextColumn::make('status'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

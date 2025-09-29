@@ -14,9 +14,11 @@ use App\Http\Controllers\GoogleController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Public routes - bisa diakses tanpa login
-Route::get('/tickets', [TicketController::class, 'index']); // Daftar tiket yang tersedia
-Route::get('/tickets/{id}', [TicketController::class, 'show']); // Detail tiket
+Route::prefix('tickets')->group(function () {
+    Route::get('/', [TicketController::class, 'index']);
+    Route::get('/{id}', [TicketController::class, 'show']);
+    Route::get('/{id}/availability', [TicketController::class, 'checkAvailability']);
+});
 
 // Google Auth (jika diperlukan)
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);

@@ -45,15 +45,15 @@ class DatabaseSeeder extends Seeder
             'is_active' => true
         ]);
 
-        Ticket::create([
-                'ticket_name' => 'Drama Musikal "Cinta di Ujung Senja"',
-                'price' => 45000,
-                'event_date' => Carbon::now()->addDays(30),
-                'quantity_available' => 100,
-                'location' => 'iblis baheula',
-                'created_at' => now(),
-                'updated_at' => now(),
-        ]);
+        // Ticket::create([
+        //         'ticket_name' => 'Drama Musikal "Cinta di Ujung Senja"',
+        //         'price' => 45000,
+        //         'event_date' => Carbon::now()->addDays(30),
+        //         'quantity_available' => 100,
+        //         'location' => 'iblis baheula',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        // ]);
 
 
     }
