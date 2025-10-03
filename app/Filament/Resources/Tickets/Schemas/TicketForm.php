@@ -43,12 +43,6 @@ class TicketForm
                     ->numeric()
                     ->minValue(1),
 
-                TextInput::make('quantity_sold')
-                    ->label('Kuantitas Terjual')
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0),
-
                 Select::make('status')
                     ->label('Status')
                     ->options([
@@ -69,14 +63,14 @@ class TicketForm
                     ->directory('tickets')
                     ->label('Nama File Gambar')
                     ->nullable(),
-                Select::make('Session')
-                    ->label('Sesi')
-                    ->options([
-                        'Pagi-Siang' => 'Pagi-Siang',
-                        'Siang-Sore' => 'Siang-Sore',
-                        'Malam' => 'Malam',
-                    ])
-                    ->nullable(),
+                // Select::make('Session')
+                //     ->label('Sesi')
+                //     ->options([
+                //         'Pagi-Siang' => 'Pagi-Siang',
+                //         'Siang-Sore' => 'Siang-Sore',
+                //         'Malam' => 'Malam',
+                //     ])
+                //     ->nullable(),
 
                 // Alternatif file upload jika ingin upload gambar
                 // FileUpload::make('image')

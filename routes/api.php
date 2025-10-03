@@ -45,29 +45,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-transactions', [TransactionController::class, 'userHistory']);
     Route::get('/download-ticket/{id}', [TransactionController::class, 'downloadTicket']);
 
-    // Admin routes
-    Route::middleware('role:admin,owner')->group(function () {
-        Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard']);
-        Route::get('/admin/transactions', [TransactionController::class, 'allTransactions']);
-        Route::patch('/admin/transactions/{id}/verify', [TransactionController::class, 'verifyPayment']);
-        Route::get('/admin/export-report', [DashboardController::class, 'exportReport']);
+    // // Admin routes tidak ada kaerena menggunakan filament
+    // Route::middleware('role:admin,owner')->group(function () {
+    //     Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard']);
+    //     Route::get('/admin/transactions', [TransactionController::class, 'allTransactions']);
+    //     Route::patch('/admin/transactions/{id}/verify', [TransactionController::class, 'verifyPayment']);
+    //     Route::get('/admin/export-report', [DashboardController::class, 'exportReport']);
 
-        // User management untuk admin tidak ada karena menggunakan filament
-        // Route::get('/admin/users', [UserManagementController::class, 'index']);
-        // Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
-        // Route::put('/admin/users/{id}', [UserManagementController::class, 'update']);
-        // Route::delete('/admin/users/{id}', [UserManagementController::class, 'destroy']);
-    });
-    // Owner routes tidak ada karena menggunakan filament
-    Route::middleware('role:owner')->group(function () {
-        Route::get('/owner/dashboard', [DashboardController::class, 'ownerDashboard']);
+    //     User management untuk admin tidak ada karena menggunakan filament
+    //     Route::get('/admin/users', [UserManagementController::class, 'index']);
+    //     Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
+    //     Route::put('/admin/users/{id}', [UserManagementController::class, 'update']);
+    //     Route::delete('/admin/users/{id}', [UserManagementController::class, 'destroy']);
+    // });
+    // // Owner routes tidak ada karena menggunakan filament
+    // Route::middleware('role:owner')->group(function () {
+    //     Route::get('/owner/dashboard', [DashboardController::class, 'ownerDashboard']);
 
-        Route::post('/owner/tickets', [TicketController::class, 'store']);
-        Route::put('/owner/tickets/{id}', [TicketController::class, 'update']);
-        Route::delete('/owner/tickets/{id}', [TicketController::class, 'destroy']);
-        Route::get('/owner/tickets/{id}/sales', [TicketController::class, 'salesData']);
-        // Route::get('/tickets', [TicketController::class, 'index']);
-    });
+    //     Route::post('/owner/tickets', [TicketController::class, 'store']);
+    //     Route::put('/owner/tickets/{id}', [TicketController::class, 'update']);
+    //     Route::delete('/owner/tickets/{id}', [TicketController::class, 'destroy']);
+    //     Route::get('/owner/tickets/{id}/sales', [TicketController::class, 'salesData']);
+    //     // Route::get('/tickets', [TicketController::class, 'index']);
+    // });
 });
 // Catch-all route untuk handle 404
 Route::fallback(function () {
