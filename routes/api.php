@@ -8,6 +8,7 @@
     use App\Http\Controllers\Api\v1\DashboardController;
     use App\Http\Controllers\Api\v1\UserManagementController;
     use App\Http\Controllers\GoogleController;
+    use App\Http\Controllers\Api\v1\PaymentController;
 
 
 
@@ -28,10 +29,13 @@
     Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
+    Route::post('/payment/notification', [PaymentController::class, 'handleNotification']);
+
     // Route yang memerlukan autentikasi
     Route::middleware('auth:sanctum')->group(function () {
         // ... existing routes
-
+         Route::post('/payment/create', [PaymentController::class, 'createTransaction']);
+        Route::get('/payment/status/{orderId}', [PaymentController::class, 'checkStatus']);
         // Profile management
         Route::get('/profile', [AuthController::class, 'me']);
         Route::put('/profile', [AuthController::class, 'updateProfile']);

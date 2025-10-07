@@ -26,11 +26,11 @@ return new class extends Migration
         });
 
         // Add missing fields to transactions table
-        Schema::table('transactions', function (Blueprint $table) {
-            $table->enum('payment_status', ['pending', 'confirmed', 'rejected'])->default('pending')->after('transaction_date');
-            $table->text('qr_code')->nullable()->after('payment_status');
-            $table->string('reference_number')->unique()->after('qr_code');
-        });
+        // Schema::table('transactions', function (Blueprint $table) {
+        //     $table->enum('payment_status', ['pending', 'confirmed', 'rejected'])->default('pending')->after('transaction_date');
+        //     $table->text('qr_code')->nullable()->after('payment_status');
+        //     $table->string('reference_number')->unique()->after('qr_code');
+        // });
     }
 
     /**

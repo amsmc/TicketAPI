@@ -4,25 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\Ticket_code;
 
 class Transaction extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'user_id',
-        'ticket_id',
-        'quantity',
-        'total_price',
-        'transaction_date',
-        'payment_status',
-        'qr_code',
-        'reference_number'
+        'order_id', 'user_id', 'ticket_id', 'quantity', 'price_per_ticket',
+        'total_amount', 'session', 'customer_name', 'customer_email',
+        'customer_phone', 'snap_token', 'payment_status', 'payment_type',
+        'transaction_id', 'paid_at'
     ];
 
     protected $casts = [
-        'transaction_date' => 'datetime',
-        'total_price' => 'decimal:2'
+        'paid_at' => 'datetime',
+        'price_per_ticket' => 'decimal:2',
+        'total_amount' => 'decimal:2',
     ];
 
     public function user()
@@ -35,18 +32,8 @@ class Transaction extends Model
         return $this->belongsTo(Ticket::class);
     }
 
-    public function finance()
+    public function ticketCodes()
     {
-        return $this->hasOne(Finance::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($transaction) {
-            $transaction->reference_number = 'TRX-' . strtoupper(uniqid());
-        });
+        return $this->hasMany(Ticket_code::class);
     }
 }
-
