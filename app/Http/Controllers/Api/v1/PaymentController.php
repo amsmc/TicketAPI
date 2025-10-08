@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Ticket;
-use App\Models\Ticket_code;
+use App\Models\TicketCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
+
 
 class PaymentController extends Controller
 {
@@ -182,7 +183,7 @@ class PaymentController extends Controller
             // Generate ticket codes
             for ($i = 0; $i < $transaction->quantity; $i++) {
                 $ticketCode = $this->generateTicketCode($transaction);
-                Ticket_code::create([
+                TicketCode::create([
                     'transaction_id' => $transaction->id,
                     'ticket_code' => $ticketCode,
                 ]);

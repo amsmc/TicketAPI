@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use App\Models\Finance;
 use Illuminate\Support\Facades\Validator;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -78,9 +79,9 @@ class TransactionController extends Controller
     public function userHistory(Request $request)
     {
         $transactions = $request->user()->transactions()
-                              ->with('ticket')
-                              ->orderBy('transaction_date', 'desc')
-                              ->get();
+            ->with('ticket')
+            ->orderBy('transaction_date', 'desc')
+            ->get();
 
         return response()->json([
             'status' => 'success',
@@ -91,8 +92,8 @@ class TransactionController extends Controller
     public function allTransactions(Request $request)
     {
         $transactions = Transaction::with(['user', 'ticket'])
-                                 ->orderBy('transaction_date', 'desc')
-                                 ->paginate(20);
+            ->orderBy('transaction_date', 'desc')
+            ->paginate(20);
 
         return response()->json([
             'status' => 'success',
@@ -144,5 +145,34 @@ class TransactionController extends Controller
                 'customer_name' => $transaction->user->name
             ]
         ]);
+    }
+    public function show(Request $request, $orderId)
+    {
+        try {
+            $user = $request->user();
+
+            $transaction = Transaction::where('order_id', $orderId)
+                ->where('user_id', $user->id)
+                ->with('ticket')
+                ->first();
+
+            if (!$transaction) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Transaction not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $transaction
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Get transaction error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch transaction'
+            ], 500);
+        }
     }
 }
